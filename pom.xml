@@ -235,17 +235,4 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
-	<distributionManagement>
-		<repository>
-			<id>btms</id>
-			<name>BTMS</name>
-			<url>https://btms.zone/archiva/repository/internal/</url>
-		</repository>
-		<snapshotRepository>
-			<id>snapshots</id>
-			<name>BTMS</name>
-			<url>https://btms.zone/archiva/repository/snapshots/</url>
-		</snapshotRepository>
-	</distributionManagement>
 </project>
