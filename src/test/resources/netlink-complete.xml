@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<netlink>
+		<information>
+			<codebase>https://localhost/test-application</codebase>
+			<guid>ab51ce8d-8f88-4bed-8eaa-37d2d15d18af</guid>
+			<homepage>https://btms.gmbhs</homepage>
+			<title>Netlink Testapplication</title>
+			<vendor>JUnit</vendor>
+			<x509Attributes commonName="BTMS Reisekostenabrechnung GmbH" countryName="" localityName=""
+		</information>
+		<application>
+			<version>1.0.0</version>
+			<versionSchema>fileTimestamp</versionSchema>
+		</application>
+		<runtime>
+			<offlinAllowed>true</offlinAllowed>
+			<minJDK>1.8</minJDK>
+			<maxJDK>1.11</maxJDK>
+			<mainClass>misc.ModalityDemo</mainClass>
+		</runtime>
+		<ressources>
+			<resource isNative="true" arch="x64" os="Windows" name="netlink-test-native-1.0.0.jar" size="10" version="1.0.0"/>
+			<resource isNative="false" name="netlink-test-1.0.0.jar" size="10" version="1.0.0"/>
+		</ressources>
+</netlink>

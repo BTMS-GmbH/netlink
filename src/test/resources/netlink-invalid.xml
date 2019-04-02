@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<netlink>
+	<!-- Informations about the application. Information can not be overwritten by updated -->
+	<information>
+		<codebase>https://btms.gmbh/netlink</codebase>
+		<guid>ab51ce8d-8f88-4bed-8eaa-37d2d15d18af</guid>
+		<homepage>https://btms.gmbh/</homepage>
+		<title>netlink definition file test</title>
+		<vendor>BTMS Reisekostenabrechnung GmbH</vendor>
+		<bootApp>./application</bootApp>
+	</information>
+	<application>
+		<version>1.0.0</version>
+		<versionSchema>fileTimestamp</versionSchema>
+		<netlinkCode>./update/bnlm.jar</netlinkCode>
+	</application>
+	<runtime>
+		<offlinAllowed>true</offlinAllowed>
+		<minJDK>1.8</minJDK>
+		<maxJDK>1.11</maxJDK>
+		<mainClass>btms.gmbh.test</mainClass>
+	</runtime>
+	<ressources>
+		<resource isNative="true" arch="x86" os="Windows" name="native-windowsx32.jar" size="10" version="1.0.0"/>
+		<resource isNative="true" arch="x64" os="Windows" name="native-windowsx64.jar" size="10" version="1.0.0"/>
+		<resource isNative="false" name="jar1.jar" size="10" version="1.0.0"/>
+		<resource isNative="false" name="jar2.jar" size="10" version="1.0.0"/>
+	</ressources>
+</netlink>

@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>btms.gmbh</groupId>
+	<version>0.0.1-SNAPSHOT</version>
+	<artifactId>netlink</artifactId>
+	<packaging>jar</packaging>
+	<name>BTMS Secure java update and launching method</name>
+	<url>https://github.com/BTMS-GmbH/netlink</url>
+	<organization>
+		<name>Reisekostenabrechnung GmbH</name>
+		<url>https://btms.gmbh</url>
+	</organization>
+
+	<properties>
+		<source-level>${source-level}</source-level>
+		<copyright>Copyright (countryName) BTMS Reisekostenabrechung GmbH 2019</copyright>
+		<maven.compiler.source>${source-level}</maven.compiler.source>
+		<maven.compiler.target>${source-level}</maven.compiler.target>
+		<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+
+		<!-- commandline parser -->
+		<info-picocli-picocli-version>3.9.3</info-picocli-picocli-version>
+
+		<!-- orm -->
+		<com-j256-ormlite-ormlite-core-version>5.1</com-j256-ormlite-ormlite-core-version>
+		<!-- database -->
+		<com-h2database-h2-version>1.4.99</com-h2database-h2-version>
+
+		<!-- xstream -->
+		<org-hsqldb-hsqldb-version>2.4.1</org-hsqldb-hsqldb-version>
+		<com-thoughtworks-xstream-xstream-version>1.4.8</com-thoughtworks-xstream-xstream-version>
+
+		<!-- apache commons lang-->
+		<org-apache-commons-lang3-version>3.8.1</org-apache-commons-lang3-version>
+		<!-- apache commons io -->
+		<commons-io-commons-io-version>2.6</commons-io-commons-io-version>
+		<!-- apache commons beanutils -->
+		<commons-beanutils-commons-beanutils-version>1.9.3</commons-beanutils-commons-beanutils-version>
+
+		<!-- apache log4j2 -->
+		<org-apache-logging-log4j-api-version>2.11.1</org-apache-logging-log4j-api-version>
+		<org-apache-logging-log4j-core-version>2.11.1</org-apache-logging-log4j-core-version>
+		<org-apache-logging-log4j-web-version>2.11.1</org-apache-logging-log4j-web-version>
+
+		<!-- Junit-Testing -->
+		<org-junit-jupiter-version>5.4.0-RC2</org-junit-jupiter-version>
+		<org-junit-junit-platform-launcher-version>1.4.0-RC2</org-junit-junit-platform-launcher-version>
+		<org-assertj-assertj-core-version>3.11.1</org-assertj-assertj-core-version>
+
+		<!-- plugins -->
+		<maven-minimum-version>3.3.9</maven-minimum-version>
+		<maven-compiler-plugin-version>3.8.0</maven-compiler-plugin-version>
+		<versions-maven-plugin-version>2.5</versions-maven-plugin-version>
+
+		<!-- versioning -->
+		<org-codehaus-mojo-versions-plugin-version>2.7</org-codehaus-mojo-versions-plugin-version>
+
+	</properties>
+
+	<prerequisites>
+		<maven>${maven-minimum-version}</maven>
+	</prerequisites>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven-compiler-plugin-version}</version>
+				<configuration>
+					<source>${maven.compiler.target}</source>
+					<target>${maven.compiler.target}</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.2.1</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<transformers>
+								<transformer implementation="com.github.edwgiz.mavenShadePlugin.log4j2CacheTransformer.PluginsCacheFileTransformer" />
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>gmbh.btms.netlink.NetlinkLauncher</mainClass>
+								</transformer>
+							</transformers>
+							<filters>
+								<filter>
+									<artifact>*:*</artifact>
+									<excludes>
+										<exclude>Log4j-**</exclude>
+										<exclude>*.dtd</exclude>
+									</excludes>
+								</filter>
+								<filter>
+									<artifact>gmbh.btms:keepCurrent</artifact>
+									<includes>
+										<includes>/META-INF/DEPENDENCIES</includes>
+										<includes>/META-INF/LICENSE</includes>
+										<includes>/META-INF/LICENSE.txt</includes>
+										<includes>/META-INF/NOTICE</includes>
+										<includes>/META-INF/NOTICE.txt</includes>
+									</includes>
+								</filter>
+							</filters>
+						</configuration>
+					</execution>
+				</executions>
+				<dependencies>
+					<!-- see: https://github.com/edwgiz/maven-shaded-log4j-transformer -->
+					<dependency>
+						<groupId>com.github.edwgiz</groupId>
+						<artifactId>maven-shade-plugin.log4j2-cachefile-transformer</artifactId>
+						<version>2.8.1</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+		</plugins>
+	</build>
+
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>versions-maven-plugin</artifactId>
+				<version>${org-codehaus-mojo-versions-plugin-version}</version>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>dependency-updates-report</report>
+							<report>plugin-updates-report</report>
+							<report>property-updates-report</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+		</plugins>
+	</reporting>
+
+	<dependencies>
+		<!-- commandline parser -->
+		<dependency>
+			<groupId>info.picocli</groupId>
+			<artifactId>picocli</artifactId>
+			<version>${info-picocli-picocli-version}</version>
+		</dependency>
+
+		<!-- orm -->
+		<dependency>
+			<groupId>com.j256.ormlite</groupId>
+			<artifactId>ormlite-core</artifactId>
+			<version>${com-j256-ormlite-ormlite-core-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.j256.ormlite</groupId>
+			<artifactId>ormlite-jdbc</artifactId>
+			<version>${com-j256-ormlite-ormlite-core-version}</version>
+		</dependency>
+
+		<!-- database -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.4.199</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.thoughtworks.xstream/xstream -->
+		<dependency>
+			<groupId>com.thoughtworks.xstream</groupId>
+			<artifactId>xstream</artifactId>
+			<version>${com-thoughtworks-xstream-xstream-version}</version>
+		</dependency>
+
+		<!-- apache commons -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>${org-apache-commons-lang3-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>${commons-io-commons-io-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils</artifactId>
+			<version>${commons-beanutils-commons-beanutils-version}</version>
+		</dependency>
+
+		<!-- apache log4j2 -->
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<version>${org-apache-logging-log4j-api-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>${org-apache-logging-log4j-core-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<version>${org-junit-jupiter-version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.platform</groupId>
+			<artifactId>junit-platform-launcher</artifactId>
+			<version>${org-junit-junit-platform-launcher-version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<version>${org-assertj-assertj-core-version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>2.22.0</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<distributionManagement>
+		<repository>
+			<id>btms</id>
+			<name>BTMS</name>
+			<url>https://btms.zone/archiva/repository/internal/</url>
+		</repository>
+		<snapshotRepository>
+			<id>snapshots</id>
+			<name>BTMS</name>
+			<url>https://btms.zone/archiva/repository/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+</project>
