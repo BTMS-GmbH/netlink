@@ -20,6 +20,8 @@ package gmbh.btms.netlink.config;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.nio.file.Path;
+
 /**
  * Application
  *
@@ -38,9 +40,19 @@ public class Application {
 	private String versionSchema;
 	@DatabaseField
 	private String netlinkCode;
+	@DatabaseField
+	private Path workingDirectory;
 
 	public Application() {
 
+	}
+
+	public Path getWorkingDirectory() {
+		return workingDirectory;
+	}
+
+	public void setWorkingDirectory(Path workingDirectory) {
+		this.workingDirectory = workingDirectory;
 	}
 
 	public String getVersion() {

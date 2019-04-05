@@ -18,10 +18,12 @@ package gmbh.btms.netlink.config;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import gmbh.btms.netlink.RuntimeConfig;
 import org.apache.maven.artifact.versioning.ComparableVersion;
 
 import java.net.URL;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * ChachedResource
@@ -50,6 +52,8 @@ public class ValidatedResource {
 	private String fileName;
 	@DatabaseField(persisterClass = PathPersister.class)
 	private Path localPath;
+	@DatabaseField(persisterClass = PathPersister.class)
+	private Path targetPath;
 	@DatabaseField(persisterClass = URLPersister.class)
 	private URL remoteLocation;
 	@DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true, columnName = "SIGNER_ID")
@@ -60,7 +64,9 @@ public class ValidatedResource {
 	public ValidatedResource() {
 
 	}
+
 	public ValidatedResource(Resource resource) {
+
 		isNative = resource.isNative();
 		arch = resource.getArch();
 		os = resource.getOs();
@@ -68,7 +74,21 @@ public class ValidatedResource {
 		size = resource.getSize();
 		fileName = resource.getFileName();
 		localPath = resource.getLocalPath();
+		if (resource.getTargetPath() != null) {
+			targetPath = Paths.get(RuntimeConfig.instance().getLocalFileCache().toString(), resource.getTargetPath().toString());
+			targetPath.normalize();
+		} else {
+			targetPath = Paths.get("");
+		}
 		remoteLocation = resource.getRemoteLocation();
+	}
+
+	public Path getTargetPath() {
+		return targetPath;
+	}
+
+	public void setTargetPath(Path targetPath) {
+		this.targetPath = targetPath;
 	}
 
 	public NetlinkDefinition getNetlinkDefinition() {

@@ -37,13 +37,17 @@ public class Resource {
 	private String arch;
 	private String os;
 	private String href;
+	private Path targetPath;
 	private String fileName;
 	private Path localPath;
 	private Path localTmpPath;
 	private URL remoteLocation;
-
 	public Resource() {
 
+	}
+
+	public Path getTargetPath() {
+		return targetPath;
 	}
 
 	public String getFileName() {

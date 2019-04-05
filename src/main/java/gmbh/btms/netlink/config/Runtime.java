@@ -40,10 +40,6 @@ public class Runtime {
 	@DatabaseField
 	private String mainClass;
 
-	public Runtime() {
-
-	}
-
 	public boolean isOfflineAllowed() {
 		return offlineAllowed;
 	}
