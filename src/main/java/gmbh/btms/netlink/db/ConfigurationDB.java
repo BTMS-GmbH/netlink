@@ -25,9 +25,11 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import gmbh.btms.exception.DatabaseRuntimeException;
 import gmbh.btms.netlink.NetlinkLogMessages;
+import gmbh.btms.netlink.RuntimeConfig;
 import gmbh.btms.netlink.config.Runtime;
 import gmbh.btms.netlink.config.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -97,10 +99,10 @@ public class ConfigurationDB implements java.lang.AutoCloseable {
 
 	private String databaseConnectionString() {
 
-		StringBuilder dbUrl = new StringBuilder("jdbc:h2:C:\\Users\\OliverDornauf\\AppData\\Local\\btms.gmbh\\netlink\\netlink");
-		/*dbUrl.append(RuntimeConfig.instance().getLocalFileCache()).toString();
+		StringBuilder dbUrl = new StringBuilder("jdbc:h2:");
+		dbUrl.append(RuntimeConfig.instance().getLocalFileCache()).toString();
 		dbUrl.append(File.separator);
-		dbUrl.append("netlink");*/
+		dbUrl.append("netlink");
 		return dbUrl.toString();
 	}
 
