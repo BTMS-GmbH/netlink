@@ -26,12 +26,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Map;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import javax.swing.*;
 import javax.swing.filechooser.FileSystemView;
 
 /**
@@ -65,10 +63,15 @@ public class IncidentReport {
 
 	private Map<Character, String> mapChar2HTMLEntity;
 
-	public boolean createReport(Path applicationPath, Path root) {
+	public boolean createReport() {
 
 		log.info("create incident report, reqest ID:");
-		Path logFile = Paths.get(root.toString(), "log");
+		mapChar2HTMLEntity = new HashMap<Character, String>();
+		for (int i = 0; i < characters.length; i++) {
+			mapChar2HTMLEntity.put(Character.valueOf(characters[i]), entities[i]);
+		}
+
+		Path logFile = Paths.get(RuntimeConfig.instance().getLocalFileRoot().toString(), "log");
 
 		String diagnoseFile = null;
 
@@ -83,21 +86,33 @@ public class IncidentReport {
 		ArrayList<MyZipEntry> fileNameList = new ArrayList<MyZipEntry>();
 
 		if (logFile != null) {
-			fileNameList.add(new MyZipEntry(logFile, root));
+			fileNameList.add(new MyZipEntry(logFile, RuntimeConfig.instance().getLocalFileRoot()));
 
 			// Get all 7 generations of Log-Files
 			for (int i = 1; i < 8; i++) {
 				String logFileArchive = String.format("%s.%d", logFile.toString(), i);
 				Path path = Paths.get(logFileArchive);
-				fileNameList.add(new MyZipEntry(path, root));
+				fileNameList.add(new MyZipEntry(path, RuntimeConfig.instance().getLocalFileRoot()));
 			}
 		}
-		fileNameList = getFileList(root, applicationPath, fileNameList);
+		fileNameList = getFileList(RuntimeConfig.instance().getLocalFileRoot(), RuntimeConfig.instance().getLocalFileCache(), fileNameList);
 		// TODO: Is it working with MacOS?
 		File userDesktop = FileSystemView.getFileSystemView().getHomeDirectory();
 		zipFiles(fileNameList, userDesktop.getAbsolutePath() + "\\netlink-diagnose.zip");
 		File file = new File(diagnoseFile);
 		file.delete();
+
+		ResourceBundle messages = ResourceBundle.getBundle("messages", Locale.getDefault());
+		int answer = JOptionPane.showConfirmDialog (null, messages.getString("msg.incident"),messages.getString("msg.question"),JOptionPane.YES_NO_OPTION);
+		if (answer == JOptionPane.YES_OPTION) {
+			try {
+				Files.walk(RuntimeConfig.instance().getLocalFileCache())
+						.map(Path::toFile)
+						.forEach(File::delete);
+			} catch (IOException ex) {
+				log.catching(Level.INFO, ex);
+			}
+		}
 		return true;
 	}
 

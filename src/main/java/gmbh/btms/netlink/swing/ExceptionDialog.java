@@ -44,9 +44,6 @@ public class ExceptionDialog extends JDialog {
 	private JLabel lblError;
 	private JTextArea exceptionText;
 
-	private Path rootDirectory = null;
-	private Path applicationPath = null;
-
 	/**
 	 * Create the frame.
 	 */
@@ -137,14 +134,12 @@ public class ExceptionDialog extends JDialog {
 		sl_panelBody.putConstraint(SpringLayout.NORTH, btnReportButton, 0, SpringLayout.NORTH, btnOkButton);
 		sl_panelBody.putConstraint(SpringLayout.EAST, btnReportButton, -13, SpringLayout.WEST, btnOkButton);
 		panelBody.add(btnReportButton);
-		boolean enabled = applicationPath != null && rootDirectory != null;
-		btnReportButton.setEnabled(enabled);
 		btnReportButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 				IncidentReport report = new IncidentReport();
-				report.createReport(applicationPath, rootDirectory);
+				report.createReport();
 				setCursor(Cursor.getDefaultCursor());
 				dispose();
 			}
@@ -165,19 +160,6 @@ public class ExceptionDialog extends JDialog {
 		panelBody.add(exceptionText);
 		contentPane.setLayout(gl_contentPane);
 
-	}
-
-	public ExceptionDialog(RuntimeConfig configuration) {
-
-		if (configuration != null) {
-			rootDirectory = configuration.getLocalFileRoot();
-			applicationPath = configuration.getLocalFileCache();
-			if (applicationPath == null) {
-				applicationPath = configuration.getLocalFileRoot();
-			}
-		}
-		initGUI();
-		setLocationRelativeTo(null);
 	}
 
 	public JTextArea getEditor() {

@@ -22,7 +22,9 @@ import com.thoughtworks.xstream.XStreamException;
 import gmbh.btms.exception.ConfigurationRuntimeException;
 import gmbh.btms.netlink.config.Runtime;
 import gmbh.btms.netlink.config.*;
+import org.apache.commons.lang3.StringUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -32,6 +34,7 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.security.CodeSource;
 import java.util.List;
 
 /**
@@ -78,32 +81,39 @@ public class XMLConfigLoader {
 		xstream.useAttributeFor(Resource.class, "size");
 		xstream.useAttributeFor(Resource.class, "version");
 		xstream.useAttributeFor(Resource.class, "href");
+		xstream.useAttributeFor(Resource.class, "targetPath");
 
 		xstream.registerConverter(new ComparableVersionConverter());
 	}
 
 	public NetlinkDefinition loadBootNetlinkDefinition() {
 
-		String bootConfigurationFileName = NetlinkLauncher.class.getProtectionDomain().getCodeSource().getLocation().toString() + RuntimeConfig.CONFIG_FILENAME;
-		URI url = null;
+		Path bootConfigurationFile = null;
+		CodeSource codeSource = null;
 
 		try {
-			url = new URI(bootConfigurationFileName);
-		} catch (URISyntaxException e) {
+			codeSource = NetlinkLauncher.class.getProtectionDomain().getCodeSource();
+			File jarFilePath = new File(codeSource.getLocation().toURI().getPath());
+			if (StringUtils.endsWithIgnoreCase(jarFilePath.getName(), ".jar")) {
+				bootConfigurationFile = Paths.get(jarFilePath.getParentFile().getPath(), RuntimeConfig.CONFIG_FILENAME);
+			} else {
+				bootConfigurationFile = Paths.get(jarFilePath.getPath(), RuntimeConfig.CONFIG_FILENAME);
+			}
+		}
+		catch (URISyntaxException e) {
 			ConfigurationRuntimeException ex = new ConfigurationRuntimeException(NetlinkLogMessages._0032, e);
-			ex.addContextValue("URI", bootConfigurationFileName);
+			ex.addContextValue("CodeSource", codeSource.getLocation().toString());
 			throw ex;
 		}
 
-		Path bootConfigurationFile = Paths.get(url);
-		log.info(NetlinkLogMessages._0018, bootConfigurationFileName);
+		log.info(NetlinkLogMessages._0018, bootConfigurationFile);
 		if (!Files.exists(bootConfigurationFile, LinkOption.NOFOLLOW_LINKS)) {
 			ConfigurationRuntimeException ex = new ConfigurationRuntimeException(NetlinkLogMessages._0031);
 			ex.addContextValue("FILE", "bootConfigurationFile");
 			throw ex;
 		}
 		NetlinkDefinition bootNetlinkDefinition = XMLConfigLoader.instance().load(bootConfigurationFile);
-		RuntimeConfig.instance().setLocalFileRoot(Paths.get(RuntimeConfig.instance().getLocalFileCache().toString(), bootNetlinkDefinition.getInformation().getTitle()));
+		RuntimeConfig.instance().setLocalFileRoot(Paths.get(RuntimeConfig.instance().getLocalFileCache().toString()));
 		return bootNetlinkDefinition;
 	}
 

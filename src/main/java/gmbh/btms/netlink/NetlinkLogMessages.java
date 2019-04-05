@@ -80,4 +80,5 @@ public class NetlinkLogMessages {
 	public static final String _0039 = "0x0039 | Load boot configuration";
 	public static final String _003A = "0x003A | Initialize Database {}";
 	public static final String _003B = "0x003B | Remove old configuration, timestamp {}";
+	public static final String _003C = "0x003C | Jar file is not signed";
 }

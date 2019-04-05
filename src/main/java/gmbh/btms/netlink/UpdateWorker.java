@@ -99,6 +99,7 @@ public class UpdateWorker extends SwingWorker<Void, Void> implements Observer {
 
 			log.info(NetlinkLogMessages._0039);
 			NetlinkDefinition bootNetlinkDefinition = XMLConfigLoader.instance().loadBootNetlinkDefinition();
+			RuntimeConfig.instance().setLocalFileCache(Paths.get(RuntimeConfig.instance().getLocalFileCache().toString(), bootNetlinkDefinition.getInformation().getTitle()));
 
 			firePropertyChange("information.title", null, bootNetlinkDefinition.getInformation().getTitle());
 			firePropertyChange("application.version", null, messages.getString("msg.wait4Version"));
@@ -334,7 +335,8 @@ public class UpdateWorker extends SwingWorker<Void, Void> implements Observer {
 
 		for (ValidatedResource validatedResource : netlinkDefinition.getValidatedResources()) {
 			if (validatedResource.isNative() && Files.exists(validatedResource.getLocalPath())) {
-				verifier.unzipResource(validatedResource.getLocalPath(), netlinkDefinition);
+				Path targetPath = Paths.get(RuntimeConfig.instance().getLocalFileCache().toString(), validatedResource.getTargetPath().toString()).normalize();
+				verifier.unzipResource(validatedResource.getLocalPath(), validatedResource.getTargetPath(), netlinkDefinition);
 			}
 		}
 	}
@@ -345,6 +347,7 @@ public class UpdateWorker extends SwingWorker<Void, Void> implements Observer {
 		Path localFile = null;
 		try {
 			Path localPath = RuntimeConfig.instance().getTempFolder();
+			localPath = localFile.normalize();
 			if (!Files.exists(localPath)) {
 				Files.createDirectory(RuntimeConfig.instance().getTempFolder());
 			}
@@ -412,9 +415,9 @@ public class UpdateWorker extends SwingWorker<Void, Void> implements Observer {
 			URI remoteFilename = codebase.resolve(validatedResource.getHref());
 
 			String relativePath = codebase.relativize(remoteFilename).toString();
-			validatedResource.setLocalPath(Paths.get(RuntimeConfig.instance().getLocalFileCache().toString(), netlinkDefinition.getInformation().getTitle(), relativePath));
+			validatedResource.setLocalPath(Paths.get(RuntimeConfig.instance().getLocalFileCache().toString(), relativePath));
 			validatedResource.setLocalTmpPath(Paths.get(FileUtils.getTempDirectoryPath(), "netlink", relativePath));
-			Path localPath = validatedResource.getLocalPath();
+			Path localPath = validatedResource.getLocalPath().normalize();
 			validatedResource.setFileName(localPath.getFileName().toString());
 			validatedResource.setRemoteLocation(remoteFilename.toURL());
 			return validatedResource;

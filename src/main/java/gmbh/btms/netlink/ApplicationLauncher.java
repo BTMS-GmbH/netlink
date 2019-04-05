@@ -58,6 +58,10 @@ public class ApplicationLauncher {
 		String mainClass = netlinkDefinition.getRuntime().getMainClass();
 
 		ProcessBuilder pb = new ProcessBuilder(commandline, "-classpath", classpath.toString(), mainClass);
+		Path workingDirectory = RuntimeConfig.instance().getLocalFileCache();
+		if (netlinkDefinition.getApplication().getWorkingDirectory() != null) {
+			workingDirectory = Paths.get(workingDirectory.toString(), netlinkDefinition.getApplication().getWorkingDirectory().toString());
+		}
 		pb.directory(RuntimeConfig.instance().getLocalFileCache().toFile());
 		Process p = null;
 

@@ -113,16 +113,23 @@ public class JarProcessor {
 			Enumeration<JarEntry> entries = jarFile.entries();
 			while (entries.hasMoreElements()) {
 				JarEntry jarEntry = entries.nextElement();
-				byte[] buffer = new byte[32768];
-				try (InputStream is = jarFile.getInputStream(jarEntry)) {
-					int n;
-					while ((n = is.read(buffer, 0, buffer.length)) != -1) {
+				if (isSignaturRelevant(jarEntry)) {
+					byte[] buffer = new byte[32768];
+					try (InputStream is = jarFile.getInputStream(jarEntry)) {
+						int n;
+						while ((n = is.read(buffer, 0, buffer.length)) != -1) {
+						}
 					}
-				}
-				X509Attributes verifiedSigner = validateEntrySigner(jarEntry, expectedx509Attributes);
-				if (firstVerifyedSigner == null) {
-					firstVerifyedSigner = verifiedSigner;
-					firstVerifiedCertificate = getCertificate(jarEntry);
+					X509Attributes verifiedSigner = validateEntrySigner(jarEntry, expectedx509Attributes);
+					if (verifiedSigner == null) {
+						SignerException ex = new SignerException(NetlinkLogMessages._003C);
+						ex.addContextValue("FILE", jarFilePath);
+						throw ex;
+					}
+					if (firstVerifyedSigner == null) {
+						firstVerifyedSigner = verifiedSigner;
+						firstVerifiedCertificate = getCertificate(jarEntry);
+					}
 				}
 			}
 			jarFile.close();
@@ -149,7 +156,7 @@ public class JarProcessor {
 		if (isSignaturRelevant(jarEntry)) {
 			// see JarEntry.getCertificates()
 			Certificate[] certificates = jarEntry.getCertificates();
-			if (certificates.length > 0) {
+			if (certificates!= null && certificates.length > 0) {
 				X509Certificate certificateForValidation = (X509Certificate) certificates[0];
 				X509Attributes verifyedSigner = verifySigner(certificateForValidation, x509Attributes);
 				return verifyedSigner;
@@ -167,7 +174,7 @@ public class JarProcessor {
 		if (isSignaturRelevant(jarEntry)) {
 			// see JarEntry.getCertificates()
 			Certificate[] certificates = jarEntry.getCertificates();
-			if (certificates.length > 0) {
+			if (certificates != null && certificates.length > 0) {
 				X509Certificate certificateForValidation = (X509Certificate) certificates[0];
 				return certificateForValidation;
 			}
@@ -234,22 +241,26 @@ public class JarProcessor {
 		return verifiedSigner;
 	}
 
-	public void unzipResource(Path path, NetlinkDefinition netlinkDefinition) {
+	public void unzipResource(Path jarFilePath, Path targetPath, NetlinkDefinition netlinkDefinition) {
 
-		try (JarFile jarFile = new JarFile(path.toFile())) {
+		try {
+			if (!Files.exists(targetPath)) {
+				Files.createDirectories(targetPath);
+			}
+		} catch (IOException ex) {
+			log.catching(Level.ERROR, ex);
+		}
+		try (JarFile jarFile = new JarFile(jarFilePath.toFile())) {
 			Enumeration<JarEntry> entries = jarFile.entries();
 			JarEntry je = null;
 			while (entries.hasMoreElements()) {
 				je = entries.nextElement();
 				if (isSignaturRelevant(je)) {
-					Path targetFilename = Paths.get(RuntimeConfig.instance().getLocalFileCache().toString(), netlinkDefinition.getInformation().getTitle(), "native", je.getName());
 					try (InputStream is = jarFile.getInputStream(je)) {
-						if (!Files.exists(targetFilename.getParent())) {
-							Files.createDirectories(targetFilename.getParent());
-						}
-						if (!Files.exists(targetFilename)) {
-							Files.createFile(targetFilename);
-							FileOutputStream fos = new FileOutputStream(targetFilename.toFile());
+						Path file = Paths.get(targetPath.toString(), je.getName());
+						if (!Files.exists(file)) {
+							Files.createFile(file);
+							FileOutputStream fos = new FileOutputStream(file.toFile());
 							byte[] buffer = new byte[8192];
 							int bytesRead;
 							while ((bytesRead = is.read(buffer)) != -1) {

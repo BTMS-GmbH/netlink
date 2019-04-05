@@ -18,11 +18,14 @@
 package gmbh.btms.netlink.swing;
 
 import gmbh.btms.netlink.UpdateWorker;
+import org.apache.commons.lang3.exception.ContextedRuntimeException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import javax.swing.*;
@@ -178,8 +181,22 @@ public class NetlinkGUI extends JFrame implements PropertyChangeListener {
 			Throwable ex = (Throwable) evt.getNewValue();
 			String stackTrace = ExceptionUtils.getStackTrace(ex);
 			ExceptionDialog dialog = new ExceptionDialog();
-			dialog.getEditor().setText(ex.getLocalizedMessage());
-			dialog.getExceptionText().setText(stackTrace);
+			if (ex instanceof ContextedRuntimeException) {
+				ContextedRuntimeException e = (ContextedRuntimeException)ex;
+				StringBuilder msg = new StringBuilder(e.getRawMessage());
+				List<Pair<String, Object>> context = ((ContextedRuntimeException) ex).getContextEntries();
+				Pair<String, Object>contextValue = context.get(0);
+				msg.append("\n").append(contextValue.getKey()).append(" : ").append(contextValue.getValue());
+				dialog.getEditor().setText(msg.toString());
+				StringBuilder longmessage = new StringBuilder();
+				context.forEach(pair -> longmessage.append(pair.getKey()).append(" : ").append(pair.getValue()).append("\n"));
+				longmessage.append(stackTrace);
+				dialog.getExceptionText().setText(longmessage.toString());
+			} else {
+				dialog.getEditor().setText(ex.getLocalizedMessage());
+				dialog.getExceptionText().setText(stackTrace);
+			}
+
 			dialog.setVisible(true);
 		}
 
