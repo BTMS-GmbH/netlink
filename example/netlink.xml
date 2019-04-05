@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<?xml-stylesheet type="text/xsl" href="https://btms.gmbh/netlink"?>
+<!--
+  ~ Copyright 2019 [https://btms.gmbh]
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<netlink>
+	<!-- Informations about the application. Information can not be overwritten by updated -->
+	<information>
+		<codebase>https://example.com/netlink/example-app</codebase>
+		<guid>ab51ce8d-8f88-4bed-8eaa-37d2d15d18af</guid>
+		<homepage>https://example.com</homepage>
+		<title>Application Title</title>
+		<vendor>Your Company Name</vendor>
+		<x509Attributes commonName=""
+		                countryName=""
+		                localityName=""
+		                stateOrProvinceName=""
+		                streetAddress=""
+		                organizationName=""
+		                organizationalUnitName=""
+		                domainComponent=""
+		                emailAddress=""/>
+	</information>
+
+	<application>
+		<version>6.0.3</version>
+		<versionSchema>fileTimestamp</versionSchema>
+	</application>
+	<runtime>
+		<offlineAllowed>true</offlineAllowed>
+		<minJDK>1.8</minJDK>
+		<maxJDK>1.11</maxJDK>
+		<mainClass>com.example.Main</mainClass>
+	</runtime>
+	<resources>
+		<resource href="./6.0.3/example-6.0.3.jar" size="2911366"/>
+		<resource href="./6.0.3/example-native-6.0.3.jar" size="1177343"  targetPath="./lib" isNative="true" arch="x86" os="Windows"/>
+		<resource href="./lib/bcprov-jdk16-145.jar" size="1757682"/>
+	</resources>
+</netlink>
