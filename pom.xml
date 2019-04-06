@@ -13,10 +13,10 @@
 	</organization>
 
 	<properties>
-		<source-level>${source-level}</source-level>
-		<copyright>Copyright (countryName) BTMS Reisekostenabrechung GmbH 2019</copyright>
-		<maven.compiler.source>${source-level}</maven.compiler.source>
-		<maven.compiler.target>${source-level}</maven.compiler.target>
+		<source-level>1.8</source-level>
+		<copyright>Copyright BTMS Reisekostenabrechung GmbH 2019</copyright>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
 		<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
 
 		<!-- commandline parser -->
