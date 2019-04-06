@@ -1,3 +1,5 @@
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v1.4%20adopted-ff69b4.svg)](code-of-conduct.md)
+
 # netlink
 ## purpose
 Netlink is an update mechanism for Java applications. The integrity is verified with the help of digital signatures.
