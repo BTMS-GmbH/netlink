@@ -2,7 +2,7 @@
 <project>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>btms.gmbh</groupId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<artifactId>netlink</artifactId>
 	<packaging>jar</packaging>
 	<name>BTMS Secure java update and launching method</name>
